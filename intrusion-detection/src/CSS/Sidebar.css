@@ -1,0 +1,61 @@
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css');
+
+/* Sidebar Container */
+.sidebar-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 220px;
+  height: 100%;
+  background-color: #1a1a2e;
+  display: flex;
+  flex-direction: column;
+  padding-top: 20px;
+  color: white;
+  z-index: 1100; /* Higher than the navbar */
+}
+
+
+.sidenav {
+  display: flex;
+  flex-direction: column;
+}
+
+.Heading-sidebar {
+  text-align: center;
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #22CAB8;
+}
+
+/* Sidebar Items */
+.SB-items {
+  margin: 10px 0;
+  padding: 10px 15px;
+  border-radius: 8px;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  display: flex;
+  align-items: center;
+}
+
+.SB-items:hover {
+  background-color: #282238;
+  cursor: pointer;
+  transform: scale(1.05);
+}
+
+.SB-items.active {
+  background-color: #22CAB8;
+}
+
+.SB-icon {
+  margin-right: 10px;
+  color: white;
+}
+
+.SB-link {
+  text-decoration: none;
+  color: inherit;
+  font-size: 16px;
+}
