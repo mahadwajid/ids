@@ -6,13 +6,13 @@ import Home from "./Home";
 import DataBalancing from "./DataBalancing";
 import Preprocessing from "./Preprocessing";
 
-const Right = () => {
+const Right = ({ selectedDataset }) => {
   return (
     <div style={{ width: "100%" }}>
       <div style={{ marginTop: "50px", width: "100%" }}>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="data-visualization" element={<DataVisualization />} />
+          <Route path="data-visualization" element={<DataVisualization selectedDataset={selectedDataset} />} />
           <Route path="intrusion-detection" element={<IntrusionDetection />} />
           <Route path="DataBalancing" element={<DataBalancing />} />
           <Route path="Preprocessing" element={<Preprocessing />} />

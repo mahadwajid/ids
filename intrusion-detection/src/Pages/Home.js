@@ -1,6 +1,5 @@
-// Home.js
 import React, { useState } from 'react';
-import { uploadDataset } from '../Services/API';  // Import the service function
+import { uploadDataset } from '../Services/API'; // Import the service function
 import '../CSS/Home.css';
 
 function Home() {
@@ -39,23 +38,24 @@ function Home() {
             setUploadMessage('Please select a file to upload.');
             return;
         }
-
+    
         const formData = new FormData();
-        formData.append('dataset', file); // Append the selected file
-        formData.append('name', fileName); // Append the file name
-        formData.append('size', fileSize); // Append the file size
-        // You might want to include the path if it's generated dynamically on the server
-
+        formData.append('dataset', file);
+        formData.append('name', fileName);
+        formData.append('size', fileSize);
+    
         setUploadProgress(0); // Reset progress
-
+    
         try {
-            const message = await uploadDataset(formData); // Call the service function with form data
+            const message = await uploadDataset(formData, (progress) => {
+                setUploadProgress(progress); // Update progress state
+            });
             setUploadMessage(message); // Display success message
-            setAnalysis(Response.analysis);
         } catch (error) {
             setUploadMessage(error.message); // Display error message
         }
     };
+    
 
     return (
         <div className="mainhome-1">
@@ -77,7 +77,7 @@ function Home() {
                     id="file-upload"
                     accept=".csv, .txt, .doc, .pdf"
                     onChange={handleFileUpload}
-                    hidden
+                    style={{ display: 'none' }} // Hide the input but keep it functional
                 />
                 {fileName && (
                     <p className="upload-info">

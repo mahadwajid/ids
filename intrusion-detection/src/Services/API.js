@@ -12,8 +12,7 @@ export const login = async (userData) => {
   return response.data;
 };
 
-
-export const uploadDataset = async (formData) => {
+export const uploadDataset = async (formData, onProgress) => {
   try {
     const response = await axios.post(`${API_URL}/datasets/upload`, formData, {
       headers: {
@@ -21,7 +20,9 @@ export const uploadDataset = async (formData) => {
       },
       onUploadProgress: (progressEvent) => {
         const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-        return percentCompleted;
+        if (onProgress) {
+          onProgress(percentCompleted); // Invoke the callback
+        }
       },
     });
     return response.data.message || 'File uploaded successfully!';
@@ -29,6 +30,7 @@ export const uploadDataset = async (formData) => {
     throw new Error(error.response?.data?.message || 'Failed to upload the file.');
   }
 };
+
 
 
 export const fetchAnalysisData = async () => {

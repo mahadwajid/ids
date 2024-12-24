@@ -1,57 +1,57 @@
 import React, { useEffect, useState } from 'react';
-import { fetchAnalysisData } from '../Services/API'; // Import the function from API.js
+import { fetchAnalysisData } from '../Services/API';
 import '../CSS/DataVisualization.css';
+import { VictoryPie, VictoryBar, VictoryChart, VictoryAxis, VictoryTheme, VictoryLabel, VictoryContainer } from 'victory';
 import { FaDatabase, FaCheckCircle, FaExclamationCircle } from 'react-icons/fa';
-import { VictoryChart, VictoryLine, VictoryAxis, VictoryTheme, VictoryLabel } from 'victory';
 
-const DataVisualization = () => {
-    const [analysis, setAnalysis] = useState(null); // State to store the analysis data
-    const [loading, setLoading] = useState(true); // State for loading indicator
-    const [error, setError] = useState(null); // State for error handling
-
+const DataVisualization = ({ selectedDataset }) => {
+    const [analysis, setAnalysis] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+  
     useEffect(() => {
-        // Fetch data from backend
-        const fetchAnalysis = async () => {
-            try {
-                const data = await fetchAnalysisData(); // Use the function from API.js
-                if (data.length > 0) {
-                    console.log('Fetched Analysis Data:', data[0].analysis); // Debugging line
-                    setAnalysis(data[0].analysis); // Access the first dataset's analysis
-                } else {
-                    setAnalysis(null); // Handle no data scenario
-                }
-                setLoading(false);
-            } catch (err) {
-                setError('Failed to fetch data');
-                setLoading(false);
-            }
-        };
-
-        fetchAnalysis();
-    }, []); // Empty dependency array to fetch data only on mount
-
-    if (loading) {
-        return <p>Loading...</p>;
+      const fetchAnalysis = async () => {
+        if (!selectedDataset) {
+          setAnalysis(null);
+          setLoading(false);
+          return;
+        }
+  
+        try {
+          const data = await fetchAnalysisData();
+          const datasetInfo = data.find(
+            (dataset) => dataset.name === selectedDataset
+          );
+          if (datasetInfo) {
+            setAnalysis(datasetInfo.analysis);
+          } else {
+            setAnalysis(null);
+          }
+          setLoading(false);
+        } catch (err) {
+          setError('Failed to fetch data');
+          setLoading(false);
+        }
+      };
+  
+      fetchAnalysis();
+    }, [selectedDataset]);
+  
+    if (loading) return <p>Loading...</p>;
+    if (error) return <p>{error}</p>;
+  
+    if (!analysis) {
+      return <p>No analysis data available for the selected dataset.</p>;
     }
 
-    if (error) {
-        return <p>{error}</p>;
-    }
-
-    const datasetGraphData = [
-        { x: 0, y: 10 },
-        { x: 4, y: 20 },
-        { x: 8, y: 30 },
-        { x: 12, y: 25 },
-        { x: 16, y: 40 },
-        { x: 20, y: 35 },
-        { x: 24, y: 50 },
+    const normalVsAttackData = [
+        { x: 'Normal', y: analysis.NoOfNormalSamples || 0 },
+        { x: 'Attack', y: analysis.NoOfAttackSamples || 0 },
     ];
 
-    const classesGraphData = [
-        { x: 'Normal', y: analysis.NoofNormalSamples || 0 },
-        { x: 'Attack', y: analysis.NoofAttackSamples || 0 },
-    ];
+    const attackClassData = Object.entries(analysis.SamplesPerClass || {})
+        .filter(([className]) => className !== analysis.NormalClass)
+        .map(([className, count]) => ({ x: className, y: count }));
 
     return (
         <div className="Main-Container">
@@ -105,85 +105,78 @@ const DataVisualization = () => {
                             <h3>NUMBER OF NORMAL SAMPLES</h3>
                             <p>
                                 <FaCheckCircle style={{ marginRight: '10px' }} />
-                                {analysis.NoofNormalSamples || 'Data not available'}
+                                {analysis.NoOfNormalSamples || 'Data not available'}
                             </p>
                         </div>
                         <div className="dashboard-item">
                             <h3>NUMBER OF ATTACK SAMPLES</h3>
                             <p>
                                 <FaExclamationCircle style={{ marginRight: '10px' }} />
-                                {analysis.NoofAttackSamples || 'Data not available'}
+                                {analysis.NoOfAttackSamples || 'Data not available'}
                             </p>
                         </div>
                     </div>
 
                     <div className="dashboard-charts">
                         <div className="chart-container">
-                            <h3>DATASET GRAPH</h3>
-                            <VictoryChart
-                                theme={VictoryTheme.material}
-                                domainPadding={20}
+                            <h3>Normal vs Attack Samples</h3>
+                            <VictoryPie
+                                data={normalVsAttackData}
+                                colorScale={['#4caf50', '#f44336']}
+                                labels={({ datum }) => `${datum.x}: ${datum.y}`}
                                 style={{
-                                    parent: { maxWidth: '100%' },
+                                    labels: { fontSize: 12, fill: '#333' },
                                 }}
-                            >
-                                <VictoryAxis
-                                    label="Time (Hours)"
-                                    style={{
-                                        axisLabel: { padding: 30, fontSize: 12 },
-                                        tickLabels: { fontSize: 10, padding: 5 },
-                                    }}
-                                />
-                                <VictoryAxis
-                                    dependentAxis
-                                    label="Values"
-                                    style={{
-                                        axisLabel: { padding: 40, fontSize: 12 },
-                                        tickLabels: { fontSize: 10, padding: 5 },
-                                    }}
-                                />
-                                <VictoryLine
-                                    data={datasetGraphData}
-                                    style={{
-                                        data: { stroke: '#4caf50', strokeWidth: 2 },
-                                    }}
-                                />
-                            </VictoryChart>
+                                width={400} // Adjust chart width
+                                height={400}
+                            />
                         </div>
-                        <div className="chart-container">
-                            <h3>CLASSES</h3>
-                            <VictoryChart
-                                theme={VictoryTheme.material}
-                                domainPadding={20}
-                                style={{
-                                    parent: { maxWidth: '100%' },
-                                }}
-                            >
-                                <VictoryAxis
-                                    label="Classes"
+                            <div className="chart-container">
+                                <h3>Attack Classes Breakdown</h3>
+                                <VictoryChart
+                                    theme={VictoryTheme.material}
+                                    domainPadding={40}
                                     style={{
-                                        axisLabel: { padding: 30, fontSize: 12 },
-                                        tickLabels: { fontSize: 10, padding: 5 },
+                                        parent: { maxWidth: '100%', margin: '10px' }, // Add margin here
                                     }}
-                                />
-                                <VictoryAxis
-                                    dependentAxis
-                                    label="Sample Count"
-                                    style={{
-                                        axisLabel: { padding: 40, fontSize: 12 },
-                                        tickLabels: { fontSize: 10, padding: 5 },
-                                    }}
-                                />
-                                <VictoryLine
-                                    data={classesGraphData}
-                                    style={{
-                                        data: { stroke: '#f44336', strokeWidth: 2 },
-                                    }}
-                                    labels={({ datum }) => datum.y}
-                                    labelComponent={<VictoryLabel dy={-10} />}
-                                />
-                            </VictoryChart>
-                        </div>
+                                    width={650} // Adjust chart width
+                                    height={600}
+                                    containerComponent={
+                                        <VictoryContainer
+                                            style={{
+                                                margin: '10px', // Set margin for the container
+                                            }}
+                                        />
+                                    }
+                                >
+                                    <VictoryAxis
+                                        label="Attack Classes"
+                                        style={{
+                                            axisLabel: { padding: 40, fontSize: 14 },
+                                            tickLabels: { fontSize: 12, angle: -45, padding: 10 },
+                                        }}
+                                    />
+                                    <VictoryAxis
+                                        dependentAxis
+                                        label="Sample Count"
+                                        style={{
+                                            axisLabel: { padding: 50, fontSize: 14 },
+                                            tickLabels: { fontSize: 12, padding: 5 },
+                                        }}
+                                    />
+                                    <VictoryBar
+                                        data={attackClassData}
+                                        x="x"
+                                        y="y"
+                                        style={{
+                                            data: { fill: '#f44336', width: 20 },
+                                            labels: { fontSize: 12 },
+                                        }}
+                                        labels={({ datum }) => datum.y}
+                                        labelComponent={<VictoryLabel dy={-10} />}
+                                    />
+                                </VictoryChart>
+                            </div>
                     </div>
                 </>
             ) : (

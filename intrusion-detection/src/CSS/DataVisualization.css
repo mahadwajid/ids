@@ -133,28 +133,22 @@
 }
 
 .dashboard-charts {
-    width: auto;
-    height: auto;
+    width: 90%;
     display: flex;
     justify-content: center;
-    margin-top: 2rem;
-    margin-right: 2rem;
+    gap: 1rem;
     flex-wrap: wrap;
-    margin-bottom: 10rem;
-    gap: 13rem;
 }
 
 .chart-container {
-    width: 35%;
-    border: 1px solid #ffffff;
-    padding: 0rem;
-    box-sizing: border-box;
-    background-color: var(--navbarTextColor);
+    flex: 1 1 40%;
+    padding: 20px;
+    background-color: #ffffff;
     border-radius: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     margin: 1rem;
+    min-width: 350px;
 }
-
 @media screen and (max-width: 790px) {
     .Profile {
         flex-direction: column;

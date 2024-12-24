@@ -98,21 +98,22 @@
 
 /* Progress Bar */
 .progress-bar {
-    width: 80%;
-    height: 20px;
-    background-color: #e9ecef;
-    border-radius: 10px;
-    margin-top: 10px;
+    width: 100%;
+    background-color: #f3f3f3;
+    border: 1px solid #ccc;
+    border-radius: 5px;
     overflow: hidden;
-    position: relative;
+    margin-top: 10px;
+    height: 20px; /* Height of the progress bar */
 }
 
 .progress {
-    height: 100%;
-    background-color: #007bff;
-    width: 0;
-    transition: width 0.3s;
+    height: 100%; /* Fills the height of the parent */
+    background-color: #4caf50; /* Filling color */
+    width: 0%; /* Start with 0% */
+    transition: width 0.3s ease-in-out; /* Smooth animation */
 }
+
 
 /* Upload Info */
 .upload-info {

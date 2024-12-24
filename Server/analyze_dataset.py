@@ -2,44 +2,52 @@ import pandas as pd
 import sys
 import json
 
-def analyze_dataset(file_path):
+def analyze_dataset(file_path, target_column=None):
     try:
+        # Load dataset and clean column names
         df = pd.read_csv(file_path)
+        df.columns = df.columns.str.strip()  # Remove leading/trailing spaces in column names
 
-        # Basic analysis
+        # Basic details
         dataset_name = file_path.split("/")[-1]
-        dataset_type = "Imbalanced" if df[df.columns[-1]].value_counts().std() > 100 else "Balanced"
         size_kb = round(df.memory_usage(deep=True).sum() / 1024, 2)
-        no_of_attributes = len(df.columns) - 1  # Exclude target column
         total_samples = len(df)
+        no_of_attributes = len(df.columns) - 1  # Exclude target column if identified
 
-        # Identify target column (assuming the target is categorical)
-        target_column = None
-        for column in df.columns:
-            if df[column].dtype == 'object' or df[column].dtype == 'category':  # Check if the column is categorical
-                target_column = column
-                break
-
-        if not target_column:
-            return {"error": "No categorical target column found in the dataset."}
+        # Identify or confirm target column
+        if target_column is None:  # Check if target_column is passed or needs inference
+            # Infer a probable target column
+            possible_targets = ["attack_cat", "label", "class", "target"]
+            target_column = next((col for col in df.columns if col.lower() in map(str.lower, possible_targets)), None)
+        
+        if not target_column or target_column not in df.columns:
+            return {
+                "error": f"Target column not found in the dataset: {dataset_name}",
+                "available_columns": df.columns.tolist()  # Provide a hint about the dataset structure
+            }
 
         # Analyze classes
         class_counts = df[target_column].value_counts().to_dict()
         no_of_classes = len(class_counts)
-        samples_per_class = class_counts  # This is a dictionary with class label counts
 
-        # Automatically determine "Normal" class (the class with the highest sample count)
-        sorted_classes = sorted(class_counts.items(), key=lambda x: x[1], reverse=True)
-        
-        # First item is assumed to be "Normal" class, the rest are attack classes
-        normal_class, normal_count = sorted_classes[0]
-        attack_classes = sorted_classes[1:]  # All remaining classes are considered attack classes
-        
-        # Count the total number of attack samples (sum of counts of all attack classes)
-        no_of_attack_samples = sum([count for _, count in attack_classes])
+        # Separate "Normal" class and attack classes
+        normal_class = next((cls for cls in class_counts if str(cls).lower() in ["normal", "benign"]), None)
+        normal_count = class_counts.pop(normal_class, 0) if normal_class else 0
         no_of_normal_samples = normal_count
+        no_of_attack_samples = sum(class_counts.values())
+        attack_classes = list(class_counts.keys())
 
-        # Prepare analysis summary
+        # Balance assessment considering the ratio between normal and attack samples
+        normal_ratio = no_of_normal_samples / total_samples
+        attack_ratio = no_of_attack_samples / total_samples
+
+        is_imbalanced = (
+            normal_ratio < 0.4 or attack_ratio < 0.4 or  # Either class dominates significantly
+            any(count < 0.1 * total_samples for count in class_counts.values())
+        )
+        dataset_type = "Imbalanced" if is_imbalanced else "Balanced"
+
+        # Prepare analysis
         analysis = {
             "DatasetName": dataset_name,
             "DatasetType": dataset_type,
@@ -47,19 +55,20 @@ def analyze_dataset(file_path):
             "NoOfAttributes": no_of_attributes,
             "NoOfClasses": no_of_classes,
             "TotalSamples": total_samples,
-            "SamplesPerClass": samples_per_class,
-            "NoofNormalSamples": no_of_normal_samples,
-            "NoofAttackSamples": no_of_attack_samples,
+            "SamplesPerClass": {normal_class: normal_count, **class_counts},
+            "NoOfNormalSamples": no_of_normal_samples,
+            "NoOfAttackSamples": no_of_attack_samples,
             "NormalClass": normal_class,
-            "AttackClasses": [attack_class for attack_class, _ in attack_classes]
+            "AttackClasses": attack_classes
         }
 
         return analysis
 
     except Exception as e:
-        return {"error": str(e)}
+        return {"error": f"An error occurred: {str(e)}"}
 
 if __name__ == "__main__":
     file_path = sys.argv[1]
-    result = analyze_dataset(file_path)
+    target_column = sys.argv[2] if len(sys.argv) > 2 else None  # Allow passing target column via arguments
+    result = analyze_dataset(file_path, target_column)  # Pass target_column
     print(json.dumps(result))

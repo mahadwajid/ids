@@ -1,27 +1,76 @@
 import React, { useState, useEffect } from "react";
-import "../CSS/Navbar.css"; // Assuming the CSS file is in the correct location
-import { Link } from "react-router-dom";
+import "../CSS/Navbar.css";
+import { Link, useLocation } from "react-router-dom";
+import { fetchAnalysisData } from "../Services/API";
 
-function Navbar() {
+function Navbar({ selectedDataset, setSelectedDataset }) {
   const [username, setUsername] = useState('');
+  const [datasets, setDatasets] = useState([]); // State to store dataset names
+  const location = useLocation();
 
   useEffect(() => {
-    // Retrieve username from localStorage when the component mounts
     const storedUsername = localStorage.getItem("username");
     if (storedUsername) {
       setUsername(storedUsername);
     }
   }, []);
 
+  useEffect(() => {
+    const storedDataset = localStorage.getItem("selectedDataset");
+    if (storedDataset) {
+      setSelectedDataset(storedDataset);
+    }
+  }, [setSelectedDataset]);
+
+  // Fetch datasets when the component mounts
+  useEffect(() => {
+    fetchDatasets();
+  }, []);
+
+  const fetchDatasets = async () => {
+    try {
+      const data = await fetchAnalysisData();
+      setDatasets(data.map((dataset) => dataset.name)); // Assuming the API returns an array of datasets with a "name" property
+    } catch (error) {
+      console.error("Failed to fetch datasets:", error.message);
+    }
+  };
+
+  const handleDatasetChange = (e) => {
+    const dataset = e.target.value;
+    setSelectedDataset(dataset);
+    localStorage.setItem("selectedDataset", dataset); // Persist the selection
+  };
+
   const handleLogout = () => {
-    localStorage.removeItem("token"); // Clear the token from localStorage
-    localStorage.removeItem("username"); // Clear the username from localStorage
-    window.location.href = "/"; // Redirect to login page after logout
+    localStorage.removeItem("token");
+    localStorage.removeItem("username");
+    localStorage.removeItem("selectedDataset");
+    window.location.href = "/";
   };
 
   return (
     <div className="navbar">
-      <i className="fa fa-bars" style={{ color: "white" }}></i>
+      {/* Conditionally render the left-section only on the Data Visualization route */}
+      {location.pathname === "/Main/data-visualization" && (
+        <div className="left-section">
+          <i className="fa fa-bars" style={{ color: "white" }}></i>
+          <div className="dataset-dropdown">
+            <select
+              className="dataset-select"
+              value={selectedDataset || ""}
+              onChange={handleDatasetChange}
+            >
+              <option value="">Select Dataset</option>
+              {datasets.map((dataset, index) => (
+                <option key={index} value={dataset}>
+                  {dataset}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      )}
 
       <div className="right-section">
         <div className="dropdown">
@@ -30,7 +79,6 @@ function Navbar() {
             alt="Profile"
             className="round-icon"
           />
-
           <div className="dropdown-content">
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <img
