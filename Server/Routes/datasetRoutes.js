@@ -1,6 +1,8 @@
 import express from 'express';
 import multer from 'multer';
 import { uploadDataset, getAllDatasets } from '../Controllers/datasetController.js';
+import { preprocessDataset } from '../Controllers/preprocessing.js';
+
 
 const router = express.Router();
 
@@ -19,5 +21,7 @@ const upload = multer({ storage });
 // Routes
 router.post('/upload', upload.single('dataset'), uploadDataset); // Handle file uploads
 router.get('/retrive', getAllDatasets);
+// Preprocessing route
+router.post("/preprocess", preprocessDataset);
 
 export default router;

@@ -4,7 +4,7 @@ import { Link, useLocation } from "react-router-dom";
 import { fetchAnalysisData } from "../Services/API";
 
 function Navbar({ selectedDataset, setSelectedDataset }) {
-  const [username, setUsername] = useState('');
+  const [username, setUsername] = useState("");
   const [datasets, setDatasets] = useState([]); // State to store dataset names
   const location = useLocation();
 
@@ -29,7 +29,7 @@ function Navbar({ selectedDataset, setSelectedDataset }) {
 
   const fetchDatasets = async () => {
     try {
-      const data = await fetchAnalysisData();
+      const data = await fetchAnalysisData(); // Fetch datasets from the backend
       setDatasets(data.map((dataset) => dataset.name)); // Assuming the API returns an array of datasets with a "name" property
     } catch (error) {
       console.error("Failed to fetch datasets:", error.message);
@@ -49,10 +49,14 @@ function Navbar({ selectedDataset, setSelectedDataset }) {
     window.location.href = "/";
   };
 
+  // Check if current route is Preprocessing or Data Visualization
+  const showDatasetDropdown =
+    location.pathname.includes("Main/Preprocessing") ||
+    location.pathname.includes("/Main/data-visualization");
+
   return (
     <div className="navbar">
-      {/* Conditionally render the left-section only on the Data Visualization route */}
-      {location.pathname === "/Main/data-visualization" && (
+      {showDatasetDropdown && (
         <div className="left-section">
           <i className="fa fa-bars" style={{ color: "white" }}></i>
           <div className="dataset-dropdown">
@@ -80,7 +84,9 @@ function Navbar({ selectedDataset, setSelectedDataset }) {
             className="round-icon"
           />
           <div className="dropdown-content">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div
+              style={{ display: "flex", alignItems: "center", gap: "10px" }}
+            >
               <img
                 src="https://via.placeholder.com/50x50.png?text=ML"
                 alt="Profile"

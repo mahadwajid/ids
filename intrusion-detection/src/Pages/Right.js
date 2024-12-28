@@ -15,7 +15,7 @@ const Right = ({ selectedDataset }) => {
           <Route path="data-visualization" element={<DataVisualization selectedDataset={selectedDataset} />} />
           <Route path="intrusion-detection" element={<IntrusionDetection />} />
           <Route path="DataBalancing" element={<DataBalancing />} />
-          <Route path="Preprocessing" element={<Preprocessing />} />
+          <Route path="Preprocessing" element={<Preprocessing selectedDataset={selectedDataset}  />} />
           <Route path="*" element={<Home />} /> {/* Fallback for unmatched */}
         </Routes>
       </div>

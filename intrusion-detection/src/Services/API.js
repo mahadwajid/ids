@@ -31,13 +31,22 @@ export const uploadDataset = async (formData, onProgress) => {
   }
 };
 
-
-
 export const fetchAnalysisData = async () => {
   try {
-      const response = await axios.get(`${API_URL}/datasets/retrive`);
-      return response.data;
+    const response = await axios.get(`${API_URL}/datasets/retrive`);
+    return response.data;
   } catch (error) {
-      throw new Error(error.response?.data?.message || 'Failed to fetch analysis data.');
+    throw new Error(error.response?.data?.message || 'Failed to fetch analysis data.');
+  }
+};
+
+export const preprocessDataset = async (options) => {
+  try {
+    const response = await axios.post(`${API_URL}/datasets/preprocess`, options, {
+      headers: { 'Content-Type': 'application/json' },
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Failed to preprocess the dataset.');
   }
 };
