@@ -2,6 +2,8 @@ import express from 'express';
 import multer from 'multer';
 import { uploadDataset, getAllDatasets } from '../Controllers/datasetController.js';
 import { preprocessDataset } from '../Controllers/preprocessing.js';
+import { balanceDatasetWithGAN } from '../Controllers/GANBalancingController.js';
+
 
 
 const router = express.Router();
@@ -23,5 +25,9 @@ router.post('/upload', upload.single('dataset'), uploadDataset); // Handle file 
 router.get('/retrive', getAllDatasets);
 // Preprocessing route
 router.post("/preprocess", preprocessDataset);
+
+router.post('/balance-gan', balanceDatasetWithGAN);
+
+
 
 export default router;

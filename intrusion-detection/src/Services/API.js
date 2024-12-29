@@ -50,3 +50,13 @@ export const preprocessDataset = async (options) => {
     throw new Error(error.response?.data?.message || 'Failed to preprocess the dataset.');
   }
 };
+
+export const fetchAndBalanceDataset = async () => {
+  try {
+      const response = await axios.post(`${API_URL}/datasets/balance-gan`);
+      return response.data;
+  } catch (error) {
+      console.error('Error in API call:', error.response?.data || error.message);
+      throw error;
+  }
+};

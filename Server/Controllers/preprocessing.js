@@ -29,6 +29,9 @@ export const preprocessDataset = async (req, res) => {
       return res.status(400).json({ error: `Dataset file not found: ${dataset}` });
     }
 
+    const preprocessedFileName = `preprocessed_${Date.now()}.csv`;
+    const outputFilePath = path.resolve(uploadsDir, preprocessedFileName);
+
     const options = JSON.stringify({
       missingValueHandling,
       featureScaling,
@@ -38,9 +41,9 @@ export const preprocessDataset = async (req, res) => {
     const escapedOptions = options.replace(/"/g, '\\"');
 
     const pythonScript = path.resolve(__dirname, "../prepro.py");
-    const command = `python "${pythonScript}" "${datasetPath}" "${escapedOptions}"`;
+    const command = `python "${pythonScript}" "${datasetPath}" "${escapedOptions}" "${outputFilePath}"`;
 
-    exec(command, (error, stdout, stderr) => {
+    exec(command, async (error, stdout, stderr) => {
       if (error) {
         console.error(`[ERROR] Preprocessing Failed: ${stderr}`);
         return res.status(500).json({ error: "Python script execution failed", details: stderr });
@@ -50,6 +53,11 @@ export const preprocessDataset = async (req, res) => {
         const jsonOutput = stdout.split("\n").find((line) => line.startsWith("{"));
         if (!jsonOutput) throw new Error("No valid JSON output from Python script.");
         const output = JSON.parse(jsonOutput);
+
+        datasetRecord.preprocessedPath = preprocessedFileName;
+        await datasetRecord.save();
+
+        output.preprocessedFileName = preprocessedFileName;
         res.status(200).json(output);
       } catch (parseErr) {
         console.error(`[ERROR] Parsing Output Failed: ${parseErr.message}`);
