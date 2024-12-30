@@ -12,7 +12,6 @@ const DataBalancing = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Define an array of colors for the charts
   const chartColors = [
     "rgba(255, 99, 132, 0.6)",  // Red
     "rgba(54, 162, 235, 0.6)",  // Blue
@@ -60,11 +59,11 @@ const DataBalancing = () => {
 
   // Chart data for evaluation metrics
   const getEvaluationChartData = (metrics) => ({
-    labels: ['Inception Score', 'Cosine Similarity'],
+    labels: ['Cosine Similarity', 'Discriminator Score'],
     datasets: [
       {
         label: 'Value',
-        data: [metrics.inception_score, metrics.cosine_similarity],
+        data: [metrics.cosine_similarity, metrics.discriminator_score],
         backgroundColor: chartColors.slice(0, 2), // First two colors
         borderColor: borderColors.slice(0, 2),
         borderWidth: 1,
@@ -127,7 +126,7 @@ const DataBalancing = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {Object.entries(summary.original_summary).map(([key, value]) => (
+                    {Object.entries(summary.class_counts_before_generation).map(([key, value]) => (
                       <tr key={key}>
                         <td>{key}</td>
                         <td>{value}</td>
@@ -140,7 +139,7 @@ const DataBalancing = () => {
             <Card className="summary-graph">
               <CardHeader title="Original Distribution Chart" />
               <CardContent>
-                <Bar data={getChartData(summary.original_summary)} />
+                <Bar data={getChartData(summary.class_counts_before_generation)} />
               </CardContent>
             </Card>
           </div>
@@ -158,7 +157,7 @@ const DataBalancing = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {Object.entries(summary.balanced_summary).map(([key, value]) => (
+                    {Object.entries(summary.class_counts_after_generation).map(([key, value]) => (
                       <tr key={key}>
                         <td>{key}</td>
                         <td>{value}</td>
@@ -171,7 +170,7 @@ const DataBalancing = () => {
             <Card className="summary-graph">
               <CardHeader title="Balanced Distribution Chart" />
               <CardContent>
-                <Bar data={getChartData(summary.balanced_summary)} />
+                <Bar data={getChartData(summary.class_counts_after_generation)} />
               </CardContent>
             </Card>
           </div>
@@ -189,16 +188,16 @@ const DataBalancing = () => {
                 </thead>
                 <tbody>
                   <tr>
-                    <td>Inception Score</td>
-                    <td>{formatNumber(summary.evaluation_metrics.inception_score)}</td>
-                  </tr>
-                  <tr>
                     <td>Cosine Similarity</td>
                     <td>{formatNumber(summary.evaluation_metrics.cosine_similarity)}</td>
                   </tr>
+                  <tr>
+                    <td>Discriminator Score</td>
+                    <td>{formatNumber(summary.evaluation_metrics.discriminator_score)}</td>
+                  </tr>
                 </tbody>
               </table>
-              <div className="chart-container">
+              <div className="chart-container-GAN">
                 <Line data={getEvaluationChartData(summary.evaluation_metrics)} />
               </div>
             </CardContent>

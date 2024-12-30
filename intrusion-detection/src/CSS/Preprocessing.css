@@ -52,7 +52,7 @@
 
 .apply-button {
   margin-top: 1rem;
-  padding: 0.5rem 1.5rem;
+  padding: 10px 20px;
   background-color: #007acc;
   color: white;
   border: none;
@@ -68,7 +68,7 @@
 }
 
 /* Chart container styling */
-.chart-container {
+.chart-container-1 {
   width: 45%;
   padding: 1rem;
   background-color: #ffffff;
@@ -184,4 +184,25 @@
   background-color: #42a5f5;
   width: 0; /* Dynamic width based on progress */
   transition: width 0.3s ease;
+}
+
+.clear-button {
+  background-color: #ff4d4d; /* Red background for a clear/reset action */
+  color: white; /* White text color for contrast */
+  border: none; /* Remove default border */
+  padding: 10px 20px; /* Add padding for a button-like appearance */
+  margin-left: 10px; /* Add space between the Apply button and Clear button */
+  border-radius: 5px; /* Rounded corners */
+  cursor: pointer; /* Pointer cursor on hover */
+  font-size: 16px; /* Font size for readability */
+  transition: background-color 0.3s ease; /* Smooth transition effect */
+}
+
+.clear-button:hover {
+  background-color: #ff3333; /* Darker red on hover */
+}
+
+.clear-button:active {
+  background-color: #cc0000; /* Even darker red when clicked */
+  transform: scale(0.95); /* Slight shrink effect on click */
 }

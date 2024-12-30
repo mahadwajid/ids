@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { preprocessDataset } from "../Services/API";
 import { Bar, Line, Pie } from "react-chartjs-2";
 import {
@@ -22,6 +22,23 @@ function Preprocessing({ selectedDataset }) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
 
+  // Load data from localStorage on component mount
+  useEffect(() => {
+    const savedResults = localStorage.getItem("preprocessingResults");
+    if (savedResults) {
+      setPreprocessingResults(JSON.parse(savedResults));
+    }
+  }, []);
+
+  // Save preprocessingResults to localStorage whenever it changes
+  useEffect(() => {
+    if (preprocessingResults) {
+      localStorage.setItem("preprocessingResults", JSON.stringify(preprocessingResults));
+    } else {
+      localStorage.removeItem("preprocessingResults");
+    }
+  }, [preprocessingResults]);
+
   const simulateProgress = (callback) => {
     let simulatedProgress = 0;
     const interval = setInterval(() => {
@@ -32,13 +49,13 @@ function Preprocessing({ selectedDataset }) {
       }
     }, 500); // Update every 500ms
   };
-  
+
   const handleApply = async () => {
     if (!selectedDataset) {
       alert("Please select a dataset first!");
       return;
     }
-  
+
     const options = {
       missingValueHandling: document.getElementById("missing-value-handling").checked,
       featureScaling: document.getElementById("feature-scaling").checked,
@@ -46,10 +63,10 @@ function Preprocessing({ selectedDataset }) {
       featureSelection: document.getElementById("feature-selection").checked,
       dataset: selectedDataset,
     };
-  
+
     setIsProcessing(true); // Start processing
     setProgress(0); // Reset progress
-  
+
     try {
       simulateProgress((progressValue) => setProgress(progressValue));
       const data = await preprocessDataset(options); // Replace with actual API call
@@ -61,7 +78,11 @@ function Preprocessing({ selectedDataset }) {
       setProgress(100); // Ensure progress is at 100%
     }
   };
-  
+
+  const handleClear = () => {
+    setPreprocessingResults(null);
+    localStorage.removeItem("preprocessingResults");
+  };
 
   const renderMatrix = (title, data, columnsToDisplay, maxRows = 3) => {
     if (!data || Object.keys(data).length === 0) {
@@ -72,7 +93,7 @@ function Preprocessing({ selectedDataset }) {
     if (title === "Missing Value Summary") {
       const originalValues = Object.entries(data["Original Missing Values"] || {}).slice(0, maxRows);
       const afterValues = Object.entries(data["After Preprocessing"] || {}).slice(0, maxRows);
-      
+
       rows = originalValues.map(([feature, originalCount], index) => ({
         Feature: feature,
         "Original Missing Count": originalCount,
@@ -153,17 +174,17 @@ function Preprocessing({ selectedDataset }) {
         labels: Object.keys(preprocessingResults.featureScalingSummary || {}),
         datasets: [
           {
-            label: "Original Mean",
-            data: Object.values(preprocessingResults.featureScalingSummary).map(item => item["Original Mean"] || 0),
-            backgroundColor: "#FFA726",
-            borderColor: "#FFA726",
+            label: "Scaled Mean",
+            data: Object.values(preprocessingResults.featureScalingSummary).map(item => item["Scaled Mean"] || 0),
+            backgroundColor: "#42A5F5",
+            borderColor: "#42A5F5",
             fill: false,
           },
           {
-            label: "Original Std",
-            data: Object.values(preprocessingResults.featureScalingSummary).map(item => item["Original Std"] || 0),
-            backgroundColor: "#42A5F5",
-            borderColor: "#42A5F5",
+            label: "Scaled Std",
+            data: Object.values(preprocessingResults.featureScalingSummary).map(item => item["Scaled Std"] || 0),
+            backgroundColor: "#FFA726",
+            borderColor: "#FFA726",
             fill: false,
           },
         ],
@@ -185,15 +206,19 @@ function Preprocessing({ selectedDataset }) {
       }
     : null;
 
-  const featureSelectionGraphData = preprocessingResults && preprocessingResults.featureSelectionSummary
+    const featureSelectionGraphData = preprocessingResults && preprocessingResults.featureSelectionSummary
     ? {
         labels: Object.keys(preprocessingResults.featureSelectionSummary || {}),
         datasets: [
           {
             label: "Variance Explained (%)",
-            data: Object.values(preprocessingResults.featureSelectionSummary || {}).map(value =>
-              parseFloat(value.match(/[\d.]+/)?.[0] || 0) // Extract numeric percentage
-            ),
+            data: Object.values(preprocessingResults.featureSelectionSummary || {}).map(value => {
+              // Ensure value is a string before calling .match()
+              const numericValue = typeof value === 'string'
+                ? parseFloat(value.match(/[\d.]+/)?.[0] || 0)  // Extract numeric percentage
+                : 0;  // Default to 0 if it's not a string
+              return numericValue;
+            }),
             backgroundColor: [
               "#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF", 
               "#FF9F40", "#FFA726", "#42A5F5", "#AB47BC", "#26C6DA",
@@ -202,6 +227,7 @@ function Preprocessing({ selectedDataset }) {
         ],
       }
     : null;
+  
 
   return (
     <div className="preprocessing-container">
@@ -239,13 +265,17 @@ function Preprocessing({ selectedDataset }) {
             >
               Apply
             </button>
+
+            <button type="button" className="clear-button" onClick={handleClear}>
+              Clear
+            </button>
           </form>
         </div>
 
-        <div className="chart-container">
+        {/* <div className="chart-container-1">
           <h3>Feature Distribution Graph</h3>
           {featureGraphData && <Bar data={featureGraphData} options={{ responsive: true }} />}
-        </div>
+        </div> */}
       </div>
 
       {preprocessingResults && (
@@ -269,7 +299,7 @@ function Preprocessing({ selectedDataset }) {
             {renderMatrix(
               "Feature Scaling Summary",
               preprocessingResults.featureScalingSummary,
-              ["Feature", "Original Mean", "Original Std"],
+              ["Feature", "Scaled Mean", "Scaled Std"],
               3
             )}
             <div className="summary-graph">

@@ -66,8 +66,13 @@
     background-color: #f1f1f1;
   }
   
-  .chart-container {
-    margin-top: 1.5rem;
+  .chart-container-GAN {
+    width: 45%;
+    padding: 1rem;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   }
   .clear-button {
     margin-top: 10px;
@@ -82,4 +87,5 @@
   .clear-button:hover {
     background-color: #d32f2f;
   }
+  
   
