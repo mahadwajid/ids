@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { uploadDataset } from '../Services/API'; // Import the service function
+import { useNavigate } from 'react-router-dom'; 
 import '../CSS/Home.css';
 
 function Home() {
@@ -9,7 +10,8 @@ function Home() {
     const [dragActive, setDragActive] = useState(false); // State to manage drag-and-drop highlight
     const [uploadProgress, setUploadProgress] = useState(0); // State for upload progress
     const [uploadMessage, setUploadMessage] = useState(''); // State to display success/error message
-    const [analysis, setAnalysis] = useState(null);
+
+    const navigate = useNavigate(); 
 
     const handleFileUpload = (event) => {
         event.preventDefault();
@@ -51,6 +53,9 @@ function Home() {
                 setUploadProgress(progress); // Update progress state
             });
             setUploadMessage(message); // Display success message
+            if (message.includes("success")) {
+                navigate('/Main/data-visualization'); // Navigate to Data Visualization screen
+            }
         } catch (error) {
             setUploadMessage(error.message); // Display error message
         }

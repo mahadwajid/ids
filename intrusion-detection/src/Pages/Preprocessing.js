@@ -19,13 +19,26 @@ ChartJS.register(CategoryScale, LinearScale, PointElement, BarElement, LineEleme
 
 function Preprocessing({ selectedDataset }) {
   const [preprocessingResults, setPreprocessingResults] = useState(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [progress, setProgress] = useState(0);
 
+  const simulateProgress = (callback) => {
+    let simulatedProgress = 0;
+    const interval = setInterval(() => {
+      simulatedProgress += 10; // Increment progress by 10%
+      callback(simulatedProgress);
+      if (simulatedProgress >= 100) {
+        clearInterval(interval);
+      }
+    }, 500); // Update every 500ms
+  };
+  
   const handleApply = async () => {
     if (!selectedDataset) {
       alert("Please select a dataset first!");
       return;
     }
-
+  
     const options = {
       missingValueHandling: document.getElementById("missing-value-handling").checked,
       featureScaling: document.getElementById("feature-scaling").checked,
@@ -33,14 +46,22 @@ function Preprocessing({ selectedDataset }) {
       featureSelection: document.getElementById("feature-selection").checked,
       dataset: selectedDataset,
     };
-
+  
+    setIsProcessing(true); // Start processing
+    setProgress(0); // Reset progress
+  
     try {
-      const data = await preprocessDataset(options);
+      simulateProgress((progressValue) => setProgress(progressValue));
+      const data = await preprocessDataset(options); // Replace with actual API call
       setPreprocessingResults(data);
     } catch (error) {
       console.error("Error during preprocessing:", error);
+    } finally {
+      setIsProcessing(false); // End processing
+      setProgress(100); // Ensure progress is at 100%
     }
   };
+  
 
   const renderMatrix = (title, data, columnsToDisplay, maxRows = 3) => {
     if (!data || Object.keys(data).length === 0) {
@@ -148,7 +169,8 @@ function Preprocessing({ selectedDataset }) {
         ],
       }
     : null;
-    const encodingGraphData = preprocessingResults && preprocessingResults.encodingSummary
+
+  const encodingGraphData = preprocessingResults && preprocessingResults.encodingSummary
     ? {
         labels: Object.keys(preprocessingResults.encodingSummary || {}),
         datasets: [
@@ -162,9 +184,8 @@ function Preprocessing({ selectedDataset }) {
         ],
       }
     : null;
-  
 
-    const featureSelectionGraphData = preprocessingResults && preprocessingResults.featureSelectionSummary
+  const featureSelectionGraphData = preprocessingResults && preprocessingResults.featureSelectionSummary
     ? {
         labels: Object.keys(preprocessingResults.featureSelectionSummary || {}),
         datasets: [
@@ -181,10 +202,16 @@ function Preprocessing({ selectedDataset }) {
         ],
       }
     : null;
-  
 
   return (
     <div className="preprocessing-container">
+      {isProcessing && (
+        <div className="loader-container">
+          <div className="loader"></div>
+          <p style={{ color: "white", marginTop: "10px" }}>Processing...</p>
+        </div>
+      )}
+
       <div className="options-and-chart">
         <div className="preprocessing-options">
           <h3>Preprocessing Options</h3>

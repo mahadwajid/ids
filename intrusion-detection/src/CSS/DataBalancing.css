@@ -1,137 +1,85 @@
-/* Main container styling */
-.Data-main-container {
+.data-main-container {
     width: 100%;
-    padding: 1rem 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: #f4f4f4;
-}
-
-/* Title */
-.Data-main-container h2 {
-    font-size: 1.8rem;
-    color: #333;
-    margin-bottom: 1.5rem;
-}
-
-/* Options container */
-.DataBalancing-options {
-    width: 80%;
-    border: 1px solid #ddd;
-    background-color: #ffffff;
     padding: 2rem;
-    border-radius: 10px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-/* Checkbox styling */
-.checkbox-option {
-    display: flex;
-    align-items: center;
-    margin-bottom: 1rem;
-    font-size: 1rem;
-    color: #555;
-}
-
-.checkbox-option input {
-    margin-right: 0.8rem;
-    width: 1.2rem;
-    height: 1.2rem;
-}
-
-.checkbox-option label {
-    color: #333;
-}
-
-/* Apply button styling */
-.apply-button {
-    margin-top: 1.5rem;
-    padding: 0.8rem 1.5rem;
-    background: linear-gradient(90deg, #007acc, #005f99);
-    color: #fff;
+    background-color: #f8f9fa;
+  }
+  
+  .text-container {
+    width: 90%;
+    text-align: center;
+    margin-bottom: 2rem;
+    background-color: #ffffff;
+    padding: 1.5rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .apply-button-1 {
+    padding: 0.6rem 1.8rem;
+    background-color: #007bff;
+    color: white;
     border: none;
     border-radius: 5px;
     font-size: 1rem;
     cursor: pointer;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
-    text-align: center;
-}
-
-.apply-button:hover {
-    background: linear-gradient(90deg, #005f99, #003f66);
-}
-
-/* Summary section container */
-.Summary-Databalancing {
-    width: 80%;
+    margin-top: 1rem;
+  }
+  
+  .apply-button:hover {
+    background-color: #0056b3;
+  }
+  
+  .summary-container {
+    width: 100%;
     margin-top: 2rem;
-    border: 1px solid #ddd;
-    background-color: #ffffff;
-    padding: 2rem;
-    border-radius: 10px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-/* Section title */
-.Summary-Databalancing h3 {
-    font-size: 1.5rem;
-    color: #333;
-    margin-bottom: 1.5rem;
-    text-align: center;
-}
-
-/* Graph section styling */
-.graph-section {
+  }
+  
+  .summary-section-row {
     display: flex;
     justify-content: space-between;
     margin-bottom: 2rem;
-}
-
-.graph {
-    flex: 1;
-    margin: 0 1rem;
-    text-align: center;
-}
-
-.graph h4 {
-    font-size: 1.2rem;
-    color: #555;
-    margin-bottom: 1rem;
-}
-
-/* Image styling */
-.graph img {
-    width: 100%;
-    height: auto;
-    border-radius: 5px;
-    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-/* Summary information section */
-.summary-info {
-    display: flex;
-    justify-content: space-between;
-    gap: 1.5rem;
-}
-
-.info-item {
-    flex: 1;
-    padding: 1rem;
+  }
+  
+  .summary-section, .summary-graph {
+    width: 48%;
+    background-color: #ffffff;
+    padding: 1.5rem;
     border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+  }
+  
+  .summary-table th, .summary-table td {
+    border: 1px solid #ddd;
+    padding: 0.8rem;
+    text-align: left;
+  }
+  
+  .summary-table th {
+    background-color: #f1f1f1;
+  }
+  
+  .chart-container {
+    margin-top: 1.5rem;
+  }
+  .clear-button {
+    margin-top: 10px;
+    padding: 10px 20px;
+    background-color: #f44336; /* Red */
+    color: #fff;
+    border: none;
     border-radius: 5px;
-    background-color: #f9f9f9;
-    text-align: center;
-    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.info-item h4 {
-    font-size: 1.2rem;
-    color: #333;
-    margin-bottom: 0.5rem;
-}
-
-.info-item p {
-    font-size: 1rem;
-    color: #555;
-}
+    cursor: pointer;
+  }
+  
+  .clear-button:hover {
+    background-color: #d32f2f;
+  }
+  

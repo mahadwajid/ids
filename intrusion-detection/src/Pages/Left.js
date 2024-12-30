@@ -15,6 +15,15 @@ function Left() {
         <span className="Heading-sidebar">IDS</span>
 
         <div
+          className={`SB-items ${isActive === "Home" ? "active" : ""}`}
+          onClick={() => handleClick("Home")}
+        >
+          <Link to="/Main" className="SB-link">
+            <i className="fa fa-upload SB-icon"></i> Upload Dataset
+          </Link>
+        </div>
+
+        <div
           className={`SB-items ${isActive === "DataVisualization" ? "active" : ""}`}
           onClick={() => handleClick("DataVisualization")}
         >
