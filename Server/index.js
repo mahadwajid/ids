@@ -27,7 +27,7 @@ app.use("/", authRoutes);
 app.use("/datasets", datasetRoutes);
 
 
-// Start Server
+// Start ServeZ
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
