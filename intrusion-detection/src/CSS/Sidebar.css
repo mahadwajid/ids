@@ -6,19 +6,23 @@
   top: 0;
   left: 0;
   width: 220px;
-  height: 100%;
+  height: 100vh;
+  min-height: 100%;
   background-color: #1a1a2e;
   display: flex;
   flex-direction: column;
   padding-top: 20px;
   color: white;
   z-index: 1100; /* Higher than the navbar */
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
 }
-
 
 .sidenav {
   display: flex;
   flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .Heading-sidebar {
@@ -27,35 +31,50 @@
   font-weight: bold;
   margin-bottom: 20px;
   color: #22CAB8;
+  padding: 10px 0;
 }
 
 /* Sidebar Items */
 .SB-items {
-  margin: 10px 0;
-  padding: 10px 15px;
+  margin: 5px 15px;
+  padding: 12px 15px;
   border-radius: 8px;
-  transition: background-color 0.3s ease, transform 0.3s ease;
+  transition: all 0.3s ease;
   display: flex;
   align-items: center;
+  position: relative;
 }
 
 .SB-items:hover {
-  background-color: #282238;
+  background-color: rgba(34, 202, 184, 0.1);
   cursor: pointer;
-  transform: scale(1.05);
+  transform: translateX(5px);
 }
 
 .SB-items.active {
   background-color: #22CAB8;
+  box-shadow: 0 2px 5px rgba(34, 202, 184, 0.2);
 }
 
 .SB-icon {
-  margin-right: 10px;
+  margin-right: 12px;
   color: white;
+  font-size: 16px;
+  width: 20px;
+  text-align: center;
 }
 
 .SB-link {
   text-decoration: none;
-  color: inherit;
-  font-size: 16px;
+  color: white;
+  font-size: 15px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+/* Ensure content doesn't overflow */
+* {
+  box-sizing: border-box;
 }

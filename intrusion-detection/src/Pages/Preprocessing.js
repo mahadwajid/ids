@@ -256,7 +256,7 @@ function Preprocessing({ selectedDataset }) {
             </div>
             <div className="checkbox-option">
               <input type="checkbox" id="feature-selection" />
-              <label htmlFor="feature-selection">Feature Selection or PCA</label>
+              <label htmlFor="feature-selection">Feature Selection</label>
             </div>
             <button
               type="button"

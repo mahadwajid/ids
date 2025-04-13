@@ -61,54 +61,73 @@ function Home() {
         }
     };
     
+    const formatFileSize = (bytes) => {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    };
 
     return (
-        <div className="mainhome-1">
-            <div className="Heading-home-1">
-                <h1>Upload Dataset</h1>
-            </div>
+        <div className="upload-container">
+            <div className="upload-card">
+                <h2>File Upload</h2>
+                
+                <div
+                    className={`upload-area ${dragActive ? 'drag-active' : ''}`}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleFileUpload}
+                >
+                    <div className="upload-icon">
+                        <svg width="50" height="50" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 15V3M12 3L7 8M12 3L17 8" stroke="#00BCD4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                            <path d="M3 15V19C3 20.1046 3.89543 21 5 21H19C20.1046 21 21 20.1046 21 19V15" stroke="#00BCD4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                    </div>
+                    <p>Drag files here or <label htmlFor="file-upload" className="browse-text">Browse</label></p>
+                    <input
+                        type="file"
+                        id="file-upload"
+                        accept=".csv, .txt, .doc, .pdf"
+                        onChange={handleFileUpload}
+                        style={{ display: 'none' }}
+                    />
+                </div>
 
-            <div
-                className={`Uploading-main ${dragActive ? 'drag-active' : ''}`}
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleFileUpload}
-            >
-                <label htmlFor="file-upload" className="upload-button">
-                    <i className="fa fa-upload"></i> Upload or Drag your files here
-                </label>
-                <input
-                    type="file"
-                    id="file-upload"
-                    accept=".csv, .txt, .doc, .pdf"
-                    onChange={handleFileUpload}
-                    style={{ display: 'none' }} // Hide the input but keep it functional
-                />
                 {fileName && (
-                    <p className="upload-info">
-                        File Selected: <strong>{fileName}</strong>
+                    <div className="file-info">
+                        <div className="file-icon">📄</div>
+                        <div className="file-details">
+                            <span className="file-name">{fileName}</span>
+                            <span className="file-size">{formatFileSize(fileSize)} of {formatFileSize(10 * 1024 * 1024)}</span>
+                        </div>
+                        {uploadProgress > 0 && (
+                            <div className="progress-bar">
+                                <div
+                                    className="progress"
+                                    style={{ width: `${uploadProgress}%` }}
+                                ></div>
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                <button 
+                    className="done-button" 
+                    onClick={handleUpload}
+                    disabled={!file}
+                >
+                    DONE
+                </button>
+
+                {uploadMessage && (
+                    <p className="upload-message">
+                        {uploadMessage}
                     </p>
                 )}
             </div>
-
-            <button className="upload-submit" onClick={handleUpload}>
-                Upload
-            </button>
-
-            {uploadProgress > 0 && (
-                <div className="progress-bar">
-                    <div
-                        className="progress"
-                        style={{ width: `${uploadProgress}%` }}
-                    ></div>
-                </div>
-            )}
-
-            {uploadMessage && (
-                <p className="upload-info">
-                    <strong>{uploadMessage}</strong>
-                </p>
-            )}
         </div>
     );
 }
