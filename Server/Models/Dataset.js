@@ -5,6 +5,7 @@ const datasetSchema = new mongoose.Schema({
     size: { type: String, required: true }, // e.g., 'small', 'large'
     path: { type: String, required: true }, // Path to the uploaded file
     preprocessedPath: { type: String },
+    balancedPath: { type: String },
     uploadedAt: { type: Date, default: Date.now },
 });
 

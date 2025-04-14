@@ -3,6 +3,7 @@ import multer from 'multer';
 import { uploadDataset, getAllDatasets } from '../Controllers/datasetController.js';
 import { preprocessDataset } from '../Controllers/preprocessing.js';
 import { balanceDatasetWithGAN } from '../Controllers/GANBalancingController.js';
+import { detectIntrusions } from '../Controllers/Intrusiondetction.js';
 
 
 
@@ -28,6 +29,7 @@ router.post("/preprocess", preprocessDataset);
 
 router.post('/balance-gan', balanceDatasetWithGAN);
 
+router.post('/detect-intrusion',detectIntrusions);
 
 
 export default router;

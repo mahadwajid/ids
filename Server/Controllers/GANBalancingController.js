@@ -7,22 +7,26 @@ export const balanceDatasetWithGAN = async (req, res) => {
     try {
         // Find the most recent dataset with a preprocessedPath
         const dataset = await Dataset.findOne({ preprocessedPath: { $exists: true } }).sort({ uploadedAt: -1 });
-        
+
         if (!dataset) {
             console.error("No preprocessed dataset found in the database.");
             return res.status(404).json({ error: "No preprocessed dataset found" });
         }
 
-        // Get the dataset path from the database record
-        let datasetPath = path.resolve("uploads", path.basename(dataset.preprocessedPath));
+        const uploadsDir = path.resolve("uploads");
+        const datasetPath = path.resolve(uploadsDir, dataset.preprocessedPath);
 
-        // Check if the dataset file exists at the constructed path
+        // Check if the dataset file exists
         if (!await fileExists(datasetPath)) {
             console.error(`Dataset file not found at path: ${datasetPath}`);
             return res.status(400).json({ error: "Dataset file not found" });
         }
 
-        // Define the paths to your GAN models
+        // Define the output filename for the balanced dataset
+        const balancedFileName = `balanced_${Date.now()}.csv`;
+        const balancedOutputPath = path.resolve(uploadsDir, balancedFileName);
+
+        // Define GAN model paths
         const generatorPath = path.resolve("GANModel", "gan_generator.pth");
         const discriminatorPath = path.resolve("GANModel", "gan_discriminator.pth");
 
@@ -31,9 +35,6 @@ export const balanceDatasetWithGAN = async (req, res) => {
             console.error("GAN model files missing.");
             return res.status(500).json({ error: "GAN model files missing" });
         }
-
-        // Define the output path for the balanced dataset
-        const balancedOutputPath = datasetPath.replace(".csv", "_balanced.csv");
 
         // Path to the GAN script
         const ganScriptPath = path.resolve("E:/7th Semester/ids/Server/GANBalancing.py");
@@ -54,23 +55,28 @@ export const balanceDatasetWithGAN = async (req, res) => {
                         details: stderr
                     });
                 }
-        
+
                 if (stderr) {
                     console.warn("GAN script warnings:", stderr);
                 }
-        
+
                 try {
                     const output = stdout.trim();
                     const result = JSON.parse(output);
-        
+
                     if (result.error) {
                         return res.status(500).json(result);
                     }
-        
+
                     // Check if the balanced dataset file was created
                     if (await fileExists(balancedOutputPath)) {
+                        // Save the balanced dataset path in the database
+                        dataset.balancedPath = balancedFileName;
+                        await dataset.save();
+
                         res.status(200).json({
-                            message: "Dataset balanced successfully",
+                            message: "Dataset balanced successfully and stored in the database",
+                            balancedFileName,
                             ...result
                         });
                     } else {

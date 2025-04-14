@@ -60,3 +60,20 @@ export const fetchAndBalanceDataset = async () => {
       throw error;
   }
 };
+
+export const detectIntrusions = async (datasetPath) => {
+  try {
+      const response = await fetch(`${API_URL}/datasets/detect-intrusion`, {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ datasetPath }),
+      });
+
+      return await response.json();
+  } catch (error) {
+      console.error("Error in API call:", error);
+      return { error: "Failed to connect to server" };
+  }
+};

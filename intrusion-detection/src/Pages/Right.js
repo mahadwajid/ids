@@ -13,7 +13,7 @@ const Right = ({ selectedDataset }) => {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="data-visualization" element={<DataVisualization selectedDataset={selectedDataset} />} />
-          <Route path="intrusion-detection" element={<IntrusionDetection />} />
+          <Route path="intrusion-detection" element={<IntrusionDetection selectedDataset={selectedDataset} />} />
           <Route path="DataBalancing" element={<DataBalancing />} />
           <Route path="Preprocessing" element={<Preprocessing selectedDataset={selectedDataset}  />} />
           <Route path="*" element={<Home />} /> {/* Fallback for unmatched */}

@@ -27,6 +27,20 @@ function Navbar({ selectedDataset, setSelectedDataset }) {
     fetchDatasets();
   }, []);
 
+  useEffect(() => {
+    fetchDatasets(); // Fetch datasets when Navbar mounts
+
+    const handleDatasetUpdate = () => {
+        fetchDatasets(); // ✅ Fetch datasets when a new dataset is uploaded
+    };
+
+    window.addEventListener("datasetUpdated", handleDatasetUpdate);
+
+    return () => {
+        window.removeEventListener("datasetUpdated", handleDatasetUpdate);
+    };
+}, []);
+
   const fetchDatasets = async () => {
     try {
       const data = await fetchAnalysisData(); // Fetch datasets from the backend
@@ -52,7 +66,8 @@ function Navbar({ selectedDataset, setSelectedDataset }) {
   // Check if current route is Preprocessing or Data Visualization
   const showDatasetDropdown =
     location.pathname.includes("Main/Preprocessing") ||
-    location.pathname.includes("/Main/data-visualization");
+    location.pathname.includes("/Main/data-visualization") || 
+    location.pathname.includes("/Main/intrusion-detection");
 
   return (
     <div className="navbar">

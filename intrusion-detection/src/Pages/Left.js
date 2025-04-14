@@ -12,7 +12,7 @@ function Left() {
   return (
     <div className="sidebar-container">
       <div className="sidenav">
-        <span className="Heading-sidebar">IDS</span>
+        <span className="Heading-sidebar">IntrusiGen</span>
 
         <div
           className={`SB-items ${isActive === "Home" ? "active" : ""}`}
